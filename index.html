@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kn it 小卖部</title>
+<style>
+  :root{
+    --paper:#ece3cd;
+    --card:#fbf6e9;
+    --panel:#f7f1e2;
+    --bar:#efe7d3;
+    --ink:#241f19;
+    --ink2:#5d5445;
+    --red:#a63a20;
+    --green:#2f4536;
+    --line:rgba(36,31,25,.28);
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{margin:0;padding:0;overflow-x:hidden;}
+
+  body{
+    background-color:var(--paper);
+    background-image:repeating-linear-gradient(0deg, rgba(36,31,25,.035) 0 1px, transparent 1px 4px);
+    color:var(--ink);
+    font-family:"Courier New","Songti SC","SimSun","STSong",serif;
+    font-size:16px;
+    line-height:1.7;
+    min-height:100vh;
+    -webkit-text-size-adjust:100%;
+  }
+
+  .wrap{
+    max-width:1040px;
+    margin:0 auto;
+    padding:0 20px 64px;
+  }
+
+  /* ---------- 页头 ---------- */
+  .site-head{
+    border-bottom:3px double var(--ink);
+    margin-bottom:26px;
+    padding:38px 0 18px;
+  }
+
+  .brand{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;}
+
+  .brand-mark{
+    display:inline-block;
+    background:var(--ink);color:var(--paper);
+    font-weight:700;font-size:30px;letter-spacing:3px;line-height:1;
+    padding:6px 14px 9px;
+    transform:rotate(-1.5deg);
+  }
+
+  .brand-name{font-size:36px;font-weight:700;letter-spacing:8px;}
+
+  .slogan{margin:14px 0 0;font-size:12px;letter-spacing:5px;color:var(--ink2);}
+
+  /* ---------- 标签页 ---------- */
+  .tabs{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
+
+  .tab{
+    font-family:inherit;font-size:17px;letter-spacing:4px;
+    padding:11px 30px 12px;
+    background:var(--card);color:var(--ink);
+    border:2px solid var(--ink);
+    box-shadow:4px 4px 0 var(--ink);
+    cursor:pointer;
+    transition:background .15s, color .15s, box-shadow .15s, transform .1s;
+  }
+
+  .tab:hover{background:var(--bar);}
+  .tab:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink);}
+  .tab.is-active{background:var(--ink);color:var(--paper);box-shadow:4px 4px 0 var(--red);}
+
+  /* ---------- 面板 ---------- */
+  .panel{
+    display:none;
+    border:2px solid var(--ink);
+    background:var(--panel);
+    box-shadow:6px 6px 0 var(--ink);
+  }
+
+  .panel.is-active{display:block;}
+
+  .panel-head{
+    display:flex;justify-content:space-between;align-items:center;
+    gap:18px;flex-wrap:wrap;
+    padding:16px 24px;
+    background:var(--bar);
+    border-bottom:2px solid var(--ink);
+  }
+
+  .panel-title{margin:0;font-size:22px;font-weight:700;letter-spacing:6px;}
+  .panel-note{font-size:12px;letter-spacing:2px;color:var(--ink2);}
+
+  /* ---------- 售卖卡片 ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(286px, 1fr));
+    gap:20px;padding:24px;
+  }
+
+  .card{
+    position:relative;
+    display:flex;flex-direction:column;
+    min-height:150px;
+    background:var(--card);
+    border:2px solid var(--ink);
+    box-shadow:4px 4px 0 rgba(36,31,25,.55);
+    padding:24px 18px 18px;
+    transition:transform .12s, box-shadow .12s;
+  }
+
+  .card:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--red);}
+
+  .card-no{
+    position:absolute;top:6px;right:12px;
+    font-size:28px;font-weight:700;letter-spacing:1px;
+    color:rgba(36,31,25,.14);
+  }
+
+  .card-title{margin:0 0 18px;font-size:19px;font-weight:700;letter-spacing:3px;}
+
+  .card-select{
+    width:100%;
+    font-family:inherit;
+    font-size:13px;
+    letter-spacing:1px;
+    background:var(--paper);
+    color:var(--ink);
+    border:1px solid var(--ink);
+    padding:6px 8px 7px;
+    outline:none;
+    cursor:pointer;
+    margin-bottom:14px;
+    transition:border-color .15s;
+  }
+
+  .card-select:focus{border-color:var(--red);}
+
+  .card-foot{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    border-top:1px dashed rgba(36,31,25,.35);
+    padding-top:10px;
+    margin-top:auto;
+  }
+
+  .price{font-weight:700;font-size:15px;color:var(--red);letter-spacing:1px;}
+  .price.detail-link{font-size:13px;letter-spacing:2px;}
+  .tag{font-size:12px;letter-spacing:1px;color:var(--ink2);border:1px solid var(--ink2);padding:1px 8px 2px;}
+
+  /* 购买按钮 */
+  .buy-btn{
+    font-family:inherit;
+    font-size:13px;
+    letter-spacing:5px;
+    padding:8px 0 9px;
+    width:100%;
+    margin-top:14px;
+    background:var(--card);
+    color:var(--ink);
+    border:2px solid var(--ink);
+    box-shadow:3px 3px 0 var(--ink);
+    cursor:pointer;
+    transition:background .15s, color .15s, box-shadow .15s, transform .1s;
+  }
+
+  .buy-btn:hover{background:var(--red);color:var(--paper);}
+  .buy-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink);}
+
+  /* ---------- 中秋限定卡片 ---------- */
+  .card.card-midautumn{
+    background:linear-gradient(160deg, #fdf6e3 0%, #f7e6c4 100%);
+    border-color:#b5451f;
+    box-shadow:4px 4px 0 rgba(181,69,31,.6);
+  }
+
+  .card.card-midautumn:hover{
+    box-shadow:2px 2px 0 #b5451f;
+  }
+
+  .card.card-midautumn .card-no{
+    color:rgba(181,69,31,.2);
+  }
+
+  .card.card-midautumn .card-title{
+    color:#8c2f14;
+  }
+
+  .card.card-midautumn .card-foot{
+    border-top-color:rgba(181,69,31,.4);
+  }
+
+  .card.card-midautumn .price{
+    color:#b5451f;
+  }
+
+  .card.card-midautumn .buy-btn:hover{
+    background:#b5451f;
+    color:#fdf6e3;
+  }
+
+  .midautumn-badge{
+    display:inline-block;
+    align-self:flex-start;
+    font-size:11px;
+    letter-spacing:3px;
+    color:#a8751a;
+    border:1px solid #c8922a;
+    background:rgba(200,146,42,.12);
+    padding:1px 10px 2px;
+    margin-bottom:14px;
+  }
+
+  .tag.tag-midautumn{
+    color:#a8751a;
+    border-color:#c8922a;
+  }
+
+  /* ---------- 活动列表 ---------- */
+  .events{padding:6px 0;}
+
+  .event{
+    display:flex;gap:22px;align-items:flex-start;
+    padding:28px 24px;
+    border-bottom:2px dashed var(--line);
+  }
+
+  .event:last-child{border-bottom:none;}
+
+  .event-no{
+    min-width:66px;font-size:34px;font-weight:700;line-height:1.1;
+    color:var(--red);letter-spacing:1px;
+  }
+
+  .event-body{flex:1;}
+
+  .event-title{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin:0 0 10px;
+    font-size:19px;font-weight:700;letter-spacing:3px;
+  }
+
+  .dev-badge{
+    font-size:12px;
+    font-weight:400;
+    letter-spacing:2px;
+    color:var(--red);
+    border:1px dashed var(--red);
+    background:rgba(166,58,32,.07);
+    padding:1px 10px 2px;
+    transform:rotate(-1deg);
+  }
+
+  .event-desc{margin:0;font-size:15px;line-height:1.9;color:var(--ink);}
+  .event-desc .hl-red{color:var(--red);font-weight:700;}
+  .event-desc + .join-btn{margin-top:18px;}
+
+  .join-btn{
+    font-family:inherit;font-size:14px;letter-spacing:4px;
+    padding:8px 26px 9px;
+    background:var(--card);color:var(--ink);
+    border:2px solid var(--ink);
+    box-shadow:3px 3px 0 var(--ink);
+    cursor:pointer;
+    transition:background .15s, color .15s, box-shadow .15s, transform .1s;
+  }
+
+  .join-btn:hover{background:var(--red);color:var(--paper);}
+  .join-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink);}
+
+  .join-btn.small{font-size:13px;padding:6px 18px 7px;letter-spacing:3px;}
+
+  .join-btn:disabled,
+  .join-btn.is-locked{
+    opacity:.45;
+    cursor:not-allowed;
+    background:var(--bar);
+    color:var(--ink2);
+    box-shadow:3px 3px 0 rgba(93,84,69,.5);
+  }
+
+  .join-btn:disabled:hover,
+  .join-btn.is-locked:hover{background:var(--bar);color:var(--ink2);}
+  .join-btn:disabled:active,
+  .join-btn.is-locked:active{transform:none;box-shadow:3px 3px 0 rgba(93,84,69,.5);}
+
+  /* ---------- 活动区底部入口 ---------- */
+  .event-foot{
+    display:flex;
+    justify-content:center;
+    padding:24px;
+    border-top:2px dashed var(--line);
+    background:var(--bar);
+  }
+
+  .showcase-entry{
+    font-family:inherit;
+    font-size:15px;
+    letter-spacing:6px;
+    padding:12px 42px 13px;
+    background:var(--card);
+    color:var(--ink);
+    border:2px solid var(--ink);
+    box-shadow:4px 4px 0 var(--ink);
+    cursor:pointer;
+    transition:background .15s, color .15s, box-shadow .15s, transform .1s;
+  }
+
+  .showcase-entry:hover{background:var(--red);color:var(--paper);box-shadow:4px 4px 0 var(--ink);}
+  .showcase-entry:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink);}
+
+  /* ---------- 页脚 ---------- */
+  .site-foot{
+    display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;
+    margin-top:40px;padding-top:18px;
+    border-top:3px double var(--ink);
+    font-size:12px;letter-spacing:1px;color:var(--ink2);
+  }
+
+  .foot-contact{color:var(--red);font-weight:700;}
+
+  /* ==================================================
+     子页面
+     ================================================== */
+  .challenge-wrap{max-width:860px;margin:0 auto;}
+
+  .nav-row{
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    margin:28px 0 22px;
+  }
+
+  .back{
+    display:inline-block;
+    font-size:13px;letter-spacing:2px;
+    color:var(--ink2);
+    text-decoration:none;
+    border:none;border-bottom:1px dashed var(--ink2);
+    padding:0 0 2px;
+    cursor:pointer;background:none;font-family:inherit;
+    transition:color .15s, border-color .15s;
+  }
+  .back:hover{color:var(--red);border-bottom-color:var(--red);}
+
+  .challenge-head{
+    border-bottom:3px double var(--ink);
+    padding-bottom:18px;margin-bottom:30px;
+  }
+
+  .challenge-head h1{margin:0 0 10px;font-size:30px;font-weight:700;letter-spacing:6px;}
+  .challenge-head p{margin:0;font-size:13px;letter-spacing:2px;color:var(--ink2);}
+
+  /* ==================================================
+     购买视图
+     ================================================== */
+  .wechat-card{
+    border:2px solid var(--ink);
+    background:var(--card);
+    box-shadow:6px 6px 0 var(--ink);
+    padding:38px 24px 34px;
+    text-align:center;
+    margin-bottom:26px;
+  }
+
+  .wechat-label{
+    font-size:13px;
+    letter-spacing:8px;
+    color:var(--ink2);
+    margin-bottom:16px;
+  }
+
+  .wechat-card .wechat-id{
+    font-size:30px;
+    font-weight:700;
+    letter-spacing:2px;
+    color:var(--red);
+    word-break:break-all;
+    line-height:1.5;
+  }
+
+  .pay-note{
+    text-align:center;
+    font-size:14px;
+    letter-spacing:4px;
+    color:var(--ink2);
+    margin:0 0 26px;
+  }
+
+  .pay-action{
+    display:flex;
+    justify-content:center;
+    margin-bottom:6px;
+  }
+
+  .scan-btn{
+    font-family:inherit;
+    font-size:15px;
+    letter-spacing:3px;
+    padding:13px 40px 14px;
+    background:var(--ink);
+    color:var(--paper);
+    border:2px solid var(--ink);
+    box-shadow:5px 5px 0 var(--red);
+    cursor:pointer;
+    transition:background .15s, color .15s, box-shadow .15s, transform .1s;
+  }
+
+  .scan-btn:hover{background:var(--red);color:var(--paper);}
+  .scan-btn:active{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--red);}
+
+  .wechat-area{
+    display:none;
+    margin-top:32px;
+    border:2px solid var(--ink);
+    background:var(--card);
+    box-shadow:5px 5px 0 rgba(36,31,25,.55);
+    padding:24px 24px 22px;
+    text-align:center;
+  }
+
+  .wechat-area.show{display:block;}
+
+  .wechat-area .panel-sub-title{
+    font-size:15px;font-weight:700;letter-spacing:4px;
+    margin:0 0 16px;padding-bottom:10px;
+    border-bottom:1px dashed var(--line);
+  }
+
+  .pay-note2{
+    margin:0;
+    font-size:16px;
+    letter-spacing:3px;
+    color:var(--ink);
+    line-height:2;
+  }
+
+  /* 计时器 / 预算等共用样式 */
+  .preset{
+    border:2px solid var(--ink);
+    background:var(--card);
+    box-shadow:4px 4px 0 rgba(36,31,25,.55);
+    padding:18px 20px 16px;
+    margin-bottom:22px;
+  }
+
+  .preset-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+
+  .preset-label{font-size:15px;font-weight:700;letter-spacing:2px;flex-shrink:0;}
+
+  .preset-select,
+  .preset-input{
+    font-family:inherit;font-size:15px;
+    background:var(--paper);color:var(--ink);
+    border:1px solid var(--ink);
+    padding:6px 8px 7px;outline:none;
+  }
+
+  .preset-select:focus,
+  .preset-input:focus{border-color:var(--red);}
+
+  .preset-input{width:130px;}
+  .preset-unit{font-size:14px;color:var(--ink2);}
+
+  .preset-warn{
+    margin-top:10px;font-size:13px;letter-spacing:1px;
+    color:var(--red);min-height:20px;
+  }
+
+  .timer{
+    position:relative;text-align:center;
+    border:2px solid var(--ink);
+    background:var(--card);
+    box-shadow:6px 6px 0 var(--ink);
+    padding:48px 20px 40px;
+    cursor:pointer;user-select:none;
+    transition:background .15s, transform .1s, box-shadow .1s;
+  }
+
+  .timer:hover{background:var(--bar);}
+  .timer:active{transform:translate(2px,2px);box-shadow:4px 4px 0 var(--ink);}
+  .timer.running{cursor:default;background:var(--card);box-shadow:6px 6px 0 var(--ink);}
+  .timer.running:hover{background:var(--card);}
+  .timer.running:active{transform:none;box-shadow:6px 6px 0 var(--ink);}
+
+  .timer-num{
+    font-size:100px;font-weight:700;letter-spacing:6px;line-height:1;
+    color:var(--ink);font-family:"Courier New",monospace;
+  }
+
+  .timer.running .timer-num{color:var(--red);}
+
+  .timer-unit{font-size:22px;letter-spacing:4px;margin-left:10px;color:var(--ink2);}
+  .timer-hint{margin:22px 0 0;font-size:13px;letter-spacing:4px;color:var(--ink2);}
+  .timer.running .timer-hint{color:var(--red);}
+
+  .board{
+    display:none;margin-top:30px;
+    background:#fdf9ee;
+    background-image:repeating-linear-gradient(0deg, transparent 0 39px, rgba(36,31,25,.13) 39px 40px);
+    border:2px solid var(--ink);
+    box-shadow:6px 6px 0 var(--ink);
+    padding:26px 26px 22px;
+  }
+
+  .board.show{display:block;}
+
+  .board-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    gap:14px;flex-wrap:wrap;
+    margin-bottom:14px;padding-bottom:8px;
+    border-bottom:2px solid var(--ink);
+  }
+
+  .board-title{font-size:18px;font-weight:700;letter-spacing:5px;}
+  .board-note{font-size:11px;letter-spacing:1px;color:var(--ink2);}
+
+  .part{display:flex;align-items:center;gap:14px;min-height:40px;padding:4px 0;}
+
+  .part-name{width:76px;flex-shrink:0;font-size:15px;font-weight:700;letter-spacing:2px;}
+
+  .part-fixed{
+    flex:1;font-size:16px;font-weight:700;letter-spacing:3px;
+    color:var(--red);padding:2px 6px 4px;
+    border-bottom:2px solid rgba(166,58,32,.35);
+  }
+
+  .part-select{
+    font-family:inherit;font-size:13px;letter-spacing:1px;
+    background:var(--card);color:var(--ink);
+    border:1px solid var(--ink);
+    padding:4px 6px 5px;outline:none;cursor:pointer;flex-shrink:0;
+  }
+
+  .part-select:focus{border-color:var(--red);}
+
+  .part-input{
+    flex:1;min-width:0;
+    font-family:inherit;font-size:16px;color:var(--ink);
+    background:transparent;
+    border:none;border-bottom:1px dashed rgba(36,31,25,.45);
+    padding:2px 6px 4px;outline:none;
+  }
+
+  .part-input:focus{border-bottom-color:var(--red);}
+  .part-input::placeholder{color:rgba(93,84,69,.45);font-size:13px;letter-spacing:1px;}
+
+  .part-input:disabled,
+  .part-select:disabled{opacity:.4;cursor:not-allowed;}
+
+  .board-actions{display:flex;justify-content:flex-end;margin-top:26px;}
+
+  .submit-btn{
+    font-family:inherit;font-size:16px;letter-spacing:6px;
+    padding:13px 46px 14px;
+    background:var(--ink);color:var(--paper);
+    border:2px solid var(--ink);
+    box-shadow:5px 5px 0 var(--red);
+    cursor:pointer;
+    transition:background .15s, color .15s, box-shadow .15s, transform .1s, opacity .15s;
+  }
+
+  .submit-btn:hover:not(:disabled){background:var(--red);color:var(--paper);}
+  .submit-btn:active:not(:disabled){transform:translate(2px,2px);box-shadow:3px 3px 0 var(--red);}
+  .submit-btn:disabled{
+    opacity:.35;cursor:not-allowed;
+    background:var(--ink2);box-shadow:5px 5px 0 rgba(93,84,69,.4);
+  }
+
+  .result{
+    display:none;margin-top:26px;
+    border:2px solid var(--red);
+    background:var(--card);
+    box-shadow:5px 5px 0 var(--red);
+    padding:20px 24px;text-align:center;
+    font-size:15px;letter-spacing:3px;color:var(--red);font-weight:700;
+  }
+
+  .result.show{display:block;}
+
+  /* ==================================================
+     配置单展示
+     ================================================== */
+  .showcase-list{display:flex;flex-direction:column;gap:20px;}
+
+  .showcase-card{
+    border:2px solid var(--ink);
+    background:var(--card);
+    box-shadow:5px 5px 0 rgba(36,31,25,.55);
+    padding:20px 22px 18px;
+    transition:transform .12s, box-shadow .12s;
+  }
+
+  .showcase-card:hover{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--red);}
+
+  .showcase-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+
+  .showcase-use{
+    font-size:15px;font-weight:700;letter-spacing:3px;
+    background:var(--ink);color:var(--paper);
+    padding:2px 12px 4px;
+  }
+
+  .showcase-budget{font-size:15px;font-weight:700;letter-spacing:1px;color:var(--red);}
+
+  .showcase-mine,
+  .showcase-private{font-size:11px;letter-spacing:2px;padding:1px 8px 2px;border:1px solid;}
+
+  .showcase-mine{color:var(--green);border-color:var(--green);}
+  .showcase-private{color:#8a8070;border-color:#8a8070;}
+
+  .showcase-rating{font-size:14px;letter-spacing:1px;color:var(--ink2);margin-bottom:14px;}
+  .showcase-rating b{color:var(--red);font-size:16px;}
+
+  .empty{
+    border:2px dashed var(--line);
+    padding:46px 20px;text-align:center;
+    font-size:14px;letter-spacing:3px;color:var(--ink2);
+  }
+
+  /* ==================================================
+     配置单详情
+     ================================================== */
+  .detail-parts{
+    border:2px solid var(--ink);
+    background:#fdf9ee;
+    background-image:repeating-linear-gradient(0deg, transparent 0 39px, rgba(36,31,25,.13) 39px 40px);
+    box-shadow:5px 5px 0 rgba(36,31,25,.55);
+    padding:18px 22px;margin-bottom:26px;
+  }
+
+  .detail-part{display:flex;align-items:center;gap:16px;min-height:40px;padding:4px 0;}
+
+  .dp-label{width:76px;flex-shrink:0;font-size:15px;font-weight:700;letter-spacing:2px;}
+
+  .dp-value{
+    flex:1;font-size:16px;letter-spacing:1px;
+    border-bottom:1px dashed rgba(36,31,25,.4);
+    padding:2px 4px 4px;word-break:break-all;
+  }
+
+  .dp-value.fixed{color:var(--red);font-weight:700;letter-spacing:3px;}
+  .dp-value.muted{color:#9a907f;letter-spacing:2px;}
+
+  .detail-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+
+  .review-area,
+  .ratings-wrap,
+  .options-wrap{
+    display:none;
+    border:2px solid var(--ink);
+    background:var(--card);
+    box-shadow:5px 5px 0 rgba(36,31,25,.55);
+    padding:20px 22px;margin-top:18px;
+  }
+
+  .review-area.show,
+  .ratings-wrap.show,
+  .options-wrap.show{display:block;}
+
+  .panel-sub-title{
+    font-size:15px;font-weight:700;letter-spacing:4px;
+    margin-bottom:16px;padding-bottom:8px;
+    border-bottom:1px dashed var(--line);
+  }
+
+  .star-row{display:flex;gap:8px;flex-wrap:wrap;}
+
+  .star{
+    font-family:inherit;font-size:30px;line-height:1;
+    background:none;border:none;
+    color:#c9bfa9;cursor:pointer;padding:2px 4px;
+    transition:color .12s, transform .1s;
+  }
+
+  .star:hover,
+  .star.on{color:var(--red);}
+  .star:active{transform:scale(.92);}
+
+  .review-note{margin-top:14px;font-size:13px;letter-spacing:1px;color:var(--ink2);}
+
+  .rating-item{
+    display:flex;align-items:center;gap:14px;
+    padding:8px 0;
+    border-bottom:1px dashed rgba(36,31,25,.2);
+    font-size:14px;
+  }
+
+  .rating-item:last-child{border-bottom:none;}
+
+  .rating-num{width:28px;color:var(--ink2);font-size:13px;flex-shrink:0;}
+  .rating-stars{color:var(--red);font-size:17px;letter-spacing:2px;}
+  .rating-who{margin-left:auto;font-size:12px;color:var(--ink2);letter-spacing:1px;}
+
+  .options-row{
+    display:flex;align-items:center;gap:22px;flex-wrap:wrap;
+    font-size:15px;
+  }
+
+  .options-row label{display:flex;align-items:center;gap:6px;cursor:pointer;letter-spacing:2px;}
+  .options-row input[type="radio"]{width:16px;height:16px;accent-color:var(--red);cursor:pointer;}
+
+  /* ==================================================
+     强大新整机 详情页 —— 星空铺满全屏
+     ================================================== */
+  #view-strongpc{
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    min-height: 100vh;
+    overflow: hidden;
+    background-color: #04060f;
+    background-image: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(56,78,140,.4), rgba(4,6,15,0) 72%);
+    padding: 60px 20px 80px;
+  }
+
+  /* 星空层 1：较大星点，向右下移动 */
+  #view-strongpc::before{
+    content:"";
+    position:absolute;
+    top:-50%;
+    left:-50%;
+    width:200%;
+    height:200%;
+    pointer-events:none;
+    z-index:0;
+    background-image:
+      radial-gradient(1.8px 1.8px at 22px 34px, #ffffff, transparent),
+      radial-gradient(1.2px 1.2px at 66px 88px, #dfe4ff, transparent),
+      radial-gradient(1.8px 1.8px at 108px 22px, #ffffff, transparent),
+      radial-gradient(1.2px 1.2px at 146px 124px, #c9d2ff, transparent),
+      radial-gradient(1.8px 1.8px at 186px 58px, #ffffff, transparent),
+      radial-gradient(1.2px 1.2px at 34px 156px, #ffffff, transparent),
+      radial-gradient(1.2px 1.2px at 82px 196px, #d2d9ff, transparent),
+      radial-gradient(1.8px 1.8px at 126px 176px, #ffffff, transparent),
+      radial-gradient(1.2px 1.2px at 166px 206px, #ffffff, transparent),
+      radial-gradient(1.2px 1.2px at 206px 136px, #dfe4ff, transparent);
+    background-size: 236px 236px;
+    animation: starDrift1 30s linear infinite;
+  }
+
+  /* 星空层 2：较小星点，向左下移动，制造层次 */
+  #view-strongpc::after{
+    content:"";
+    position:absolute;
+    top:-50%;
+    left:-50%;
+    width:200%;
+    height:200%;
+    pointer-events:none;
+    z-index:0;
+    background-image:
+      radial-gradient(1.2px 1.2px at 40px 80px, #ffffff, transparent),
+      radial-gradient(1.6px 1.6px at 130px 40px, #dfe4ff, transparent),
+      radial-gradient(1.2px 1.2px at 200px 150px, #ffffff, transparent),
+      radial-gradient(1.4px 1.4px at 90px 220px, #c9d2ff, transparent),
+      radial-gradient(1.2px 1.2px at 260px 100px, #ffffff, transparent),
+      radial-gradient(1.2px 1.2px at 170px 280px, #e6ebff, transparent);
+    background-size: 340px 340px;
+    animation: starDrift2 45s linear infinite;
+  }
+
+  @keyframes starDrift1{
+    from{ transform: translate(0, 0); }
+    to{ transform: translate(236px, 236px); }
+  }
+
+  @keyframes starDrift2{
+    from{ transform: translate(0, 0); }
+    to{ transform: translate(-340px, 340px); }
+  }
+
+  /* 内容容器 */
+  .pc-inner{
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  /* 详情页返回按钮（浅色） */
+  #view-strongpc .back{
+    color: #c9d2ff;
+    border-bottom-color: rgba(201,210,255,.5);
+  }
+  #view-strongpc .back:hover{
+    color: #ffffff;
+    border-bottom-color: #ffffff;
+  }
+
+  /* 详情页标题 */
+  .pc-head{
+    border-bottom: 3px double rgba(200,146,42,.7);
+    padding-bottom: 18px;
+    margin-bottom: 34px;
+  }
+
+  .pc-head h1{
+    margin: 0 0 10px;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: #f5e6b8;
+    text-shadow: 0 0 24px rgba(245,230,184,.45);
+  }
+
+  .pc-head p{
+    margin: 0;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: #c9b27a;
+  }
+
+  /* 配置单卡片 */
+  .spec-card{
+    border:2px solid #b5451f;
+    background:linear-gradient(160deg, #fdf6e3 0%, #f7e6c4 100%);
+    box-shadow:8px 8px 0 rgba(181,69,31,.65);
+    padding:30px 28px 26px;
+    margin-bottom:30px;
+  }
+
+  .spec-row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    min-height:48px;
+    padding:8px 0;
+    border-bottom:1px dashed rgba(181,69,31,.3);
+  }
+
+  .spec-row:last-child{border-bottom:none;}
+
+  .spec-label{
+    width:80px;
+    flex-shrink:0;
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:2px;
+    color:#8c2f14;
+  }
+
+  .spec-value{
+    flex:1;
+    font-size:16px;
+    letter-spacing:1px;
+    color:var(--ink);
+    word-break:break-all;
+  }
+
+  .spec-value.price-hl{
+    font-weight:700;
+    color:#b5451f;
+    font-size:20px;
+    letter-spacing:2px;
+  }
+
+  /* 购买按钮 */
+  .pc-actions{
+    display:flex;
+    justify-content:center;
+  }
+
+  .pc-buy-btn{
+    font-family:inherit;
+    font-size:18px;
+    letter-spacing:8px;
+    padding:16px 60px 17px;
+    background:#b5451f;
+    color:#fdf6e3;
+    border:2px solid #f5e6b8;
+    box-shadow:0 0 30px rgba(200,146,42,.5), 6px 6px 0 rgba(140,47,20,.7);
+    cursor:pointer;
+    transition:background .15s, color .15s, box-shadow .15s, transform .1s;
+  }
+
+  .pc-buy-btn:hover{
+    background:#8c2f14;
+    color:#fdf6e3;
+    box-shadow:0 0 42px rgba(200,146,42,.75), 6px 6px 0 rgba(140,47,20,.7);
+  }
+
+  .pc-buy-btn:active{
+    transform:translate(3px,3px);
+    box-shadow:0 0 30px rgba(200,146,42,.5), 3px 3px 0 rgba(140,47,20,.7);
+  }
+
+  /* ---------- 小屏 ---------- */
+  @media (max-width:640px){
+    .wrap{padding:0 14px 48px;}
+    .site-head{padding-top:28px;}
+    .brand-mark{font-size:22px;padding:5px 10px 7px;}
+    .brand-name{font-size:26px;letter-spacing:4px;}
+    .slogan{letter-spacing:3px;font-size:11px;}
+    .tab{font-size:15px;letter-spacing:2px;padding:9px 20px 10px;}
+    .panel-title{font-size:18px;letter-spacing:3px;}
+    .panel-head{padding:14px 16px;}
+    .grid{padding:16px;gap:16px;grid-template-columns:1fr;}
+    .card{min-height:130px;padding:20px 16px 14px;}
+    .card-select{font-size:12px;padding:5px 7px 6px;}
+    .buy-btn{font-size:12px;letter-spacing:4px;padding:7px 0 8px;}
+    .price.detail-link{font-size:12px;letter-spacing:1px;}
+    .midautumn-badge{font-size:10px;letter-spacing:2px;padding:1px 8px 2px;}
+    .event{flex-direction:column;align-items:flex-start;gap:8px;padding:20px 16px;}
+    .event-no{font-size:24px;min-width:auto;}
+    .event-title{font-size:17px;letter-spacing:2px;}
+    .dev-badge{font-size:11px;padding:1px 8px 2px;}
+    .event-desc{font-size:14px;}
+    .join-btn{font-size:13px;padding:7px 20px 8px;letter-spacing:3px;}
+    .event-foot{padding:18px 16px;}
+    .showcase-entry{font-size:13px;padding:10px 24px 11px;letter-spacing:4px;}
+    .site-foot{flex-direction:column;gap:6px;}
+
+    .nav-row{margin:20px 0 16px;}
+    .challenge-head h1{font-size:22px;letter-spacing:4px;}
+    .challenge-head p{font-size:12px;letter-spacing:1px;}
+    .preset{padding:14px 14px 12px;}
+    .preset-label{font-size:14px;letter-spacing:1px;}
+    .preset-input{width:100px;}
+    .timer{padding:34px 14px 28px;}
+    .timer-num{font-size:64px;letter-spacing:3px;}
+    .timer-unit{font-size:16px;margin-left:6px;}
+    .timer-hint{font-size:12px;letter-spacing:2px;margin-top:16px;}
+    .board{padding:16px 14px 18px;background-image:repeating-linear-gradient(0deg, transparent 0 41px, rgba(36,31,25,.13) 41px 42px);}
+    .board-title{font-size:15px;letter-spacing:3px;}
+    .part{flex-wrap:wrap;gap:8px;min-height:42px;}
+    .part-name{width:58px;font-size:14px;letter-spacing:1px;}
+    .part-input{font-size:15px;flex:1 1 100%;}
+    .part-select{font-size:12px;}
+    .submit-btn{font-size:14px;padding:11px 30px 12px;letter-spacing:4px;width:100%;}
+    .result{font-size:13px;letter-spacing:1px;padding:16px;}
+
+    .detail-part{flex-wrap:wrap;gap:6px;}
+    .dp-label{width:58px;font-size:14px;}
+    .dp-value{font-size:15px;flex:1 1 100%;}
+    .star{font-size:26px;}
+    .rating-who{margin-left:0;}
+
+    .wechat-card{padding:28px 16px 24px;}
+    .wechat-card .wechat-id{font-size:20px;letter-spacing:1px;}
+    .wechat-label{font-size:12px;letter-spacing:5px;}
+    .scan-btn{font-size:13px;letter-spacing:2px;padding:11px 22px 12px;width:100%;}
+    .pay-note{font-size:13px;letter-spacing:3px;}
+    .pay-note2{font-size:14px;letter-spacing:2px;}
+
+    #view-strongpc{
+      padding:36px 14px 60px;
+    }
+
+    .pc-head h1{font-size:22px;letter-spacing:4px;}
+    .pc-head p{font-size:12px;letter-spacing:2px;}
+    .spec-card{padding:22px 18px 18px;}
+    .spec-label{width:62px;font-size:14px;letter-spacing:1px;}
+    .spec-value{font-size:15px;}
+    .spec-value.price-hl{font-size:18px;}
+    .pc-buy-btn{font-size:15px;padding:13px 36px 14px;letter-spacing:5px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ==================================================
+       主视图
+       ================================================== -->
+  <div id="view-main">
+
+    <header class="site-head">
+      <div class="brand">
+        <span class="brand-mark">kn it</span>
+        <span class="brand-name">小卖部</span>
+      </div>
+      <p class="slogan">装 机 / 配 置 / 代 购 / 系 统 / 回 收</p>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab is-active" type="button" data-target="page-shop">售卖区</button>
+      <button class="tab" type="button" data-target="page-event">活动区</button>
+    </nav>
+
+    <!-- 售卖页 -->
+    <section class="panel is-active" id="page-shop">
+      <div class="panel-head">
+        <h2 class="panel-title">售 卖 区</h2>
+        <span class="panel-note">明码标价 · 先款后工 · 点亮验收再确认</span>
+      </div>
+
+      <div class="grid">
+
+        <article class="card">
+          <span class="card-no">01</span>
+          <h3 class="card-title">纯装机</h3>
+          <div class="card-foot">
+            <span class="price">¥15 起 / 台</span>
+            <span class="tag">基础</span>
+          </div>
+          <button class="buy-btn" type="button">购 买</button>
+        </article>
+
+        <article class="card">
+          <span class="card-no">02</span>
+          <h3 class="card-title">纯写配置</h3>
+          <div class="card-foot">
+            <span class="price">¥6 起 / 份</span>
+            <span class="tag">轻量</span>
+          </div>
+          <button class="buy-btn" type="button">购 买</button>
+        </article>
+
+        <article class="card">
+          <span class="card-no">03</span>
+          <h3 class="card-title">装机 + 写配置</h3>
+          <div class="card-foot">
+            <span class="price">¥65 / 台</span>
+            <span class="tag">热门</span>
+          </div>
+          <button class="buy-btn" type="button">购 买</button>
+        </article>
+
+        <article class="card">
+          <span class="card-no">04</span>
+          <h3 class="card-title">纯代购</h3>
+          <div class="card-foot">
+            <span class="price">按单结算</span>
+            <span class="tag">省事</span>
+          </div>
+          <button class="buy-btn" type="button">购 买</button>
+        </article>
+
+        <article class="card">
+          <span class="card-no">05</span>
+          <h3 class="card-title">装机全家桶</h3>
+          <div class="card-foot">
+            <span class="price">¥200 起 / 台</span>
+            <span class="tag">全包</span>
+          </div>
+          <button class="buy-btn" type="button">购 买</button>
+        </article>
+
+        <article class="card">
+          <span class="card-no">06</span>
+          <h3 class="card-title">黑苹果系统安装</h3>
+          <select class="card-select" id="hackSelect">
+            <option value="with">包含配件安装</option>
+            <option value="without">不包含配件安装</option>
+          </select>
+          <div class="card-foot">
+            <span class="price" id="hackPrice">¥40 起 / 台</span>
+            <span class="tag">进阶</span>
+          </div>
+          <button class="buy-btn" type="button">购 买</button>
+        </article>
+
+        <article class="card">
+          <span class="card-no">07</span>
+          <h3 class="card-title">系统安装</h3>
+          <select class="card-select" id="sysSelect">
+            <option value="linux">Linux</option>
+            <option value="windows">Windows</option>
+          </select>
+          <div class="card-foot">
+            <span class="price" id="sysPrice">¥20 起 / 台</span>
+            <span class="tag">快速</span>
+          </div>
+          <button class="buy-btn" type="button">购 买</button>
+        </article>
+
+        <!-- 中秋限定：强大新整机 -->
+        <article class="card card-midautumn">
+          <span class="card-no">08</span>
+          <h3 class="card-title">强大新整机</h3>
+          <div class="midautumn-badge">中 秋 限 定</div>
+          <div class="card-foot">
+            <span class="price detail-link">进入详情页查看价格</span>
+            <span class="tag tag-midautumn">中秋</span>
+          </div>
+          <button class="buy-btn" type="button" id="buyStrongPc">购 买</button>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- 活动页 -->
+    <section class="panel" id="page-event">
+      <div class="panel-head">
+        <h2 class="panel-title">活 动 区</h2>
+        <span class="panel-note">活动规则以当期公告为准 · kn it 小卖部保留解释权</span>
+      </div>
+
+      <div class="events">
+        <article class="event">
+          <div class="event-no">01</div>
+          <div class="event-body">
+            <h3 class="event-title">炸弹王</h3>
+            <p class="event-desc">500元以下的电脑可免费装机 仅限中秋时期</p>
+          </div>
+        </article>
+
+        <article class="event">
+          <div class="event-no">02</div>
+          <div class="event-body">
+            <h3 class="event-title">金子</h3>
+            <p class="event-desc">现在7000预算以上的电脑也可装</p>
+          </div>
+        </article>
+
+        <article class="event">
+          <div class="event-no">03</div>
+          <div class="event-body">
+            <h3 class="event-title">A520 仙人</h3>
+            <p class="event-desc">谁能在200秒内 基于a520主板 写出一套2000左右的电脑配置，即可赢100元</p>
+            <button class="join-btn" type="button" id="btnA520">参 与</button>
+          </div>
+        </article>
+
+        <article class="event">
+          <div class="event-no">04</div>
+          <div class="event-body">
+            <h3 class="event-title">i 白 tv</h3>
+            <p class="event-desc">现在纯白主机或者纯白海景房主机装机费减35元</p>
+          </div>
+        </article>
+
+        <article class="event">
+          <div class="event-no">05</div>
+          <div class="event-body">
+            <h3 class="event-title">
+              疯狂装机比赛
+              <span class="dev-badge">研发中</span>
+            </h3>
+            <p class="event-desc">谁能在1000秒内装出一台<span class="hl-red">可点亮</span>的主机，即可获取神秘奖励。</p>
+            <button class="join-btn is-locked" type="button" disabled>参 与</button>
+          </div>
+        </article>
+      </div>
+
+      <div class="event-foot">
+        <button class="showcase-entry" type="button" id="btnEntryShowcase">查 看 配 置 单</button>
+      </div>
+    </section>
+
+  </div><!-- /view-main -->
+
+
+  <!-- ==================================================
+       强大新整机 详情视图（星空铺满全屏）
+       ================================================== -->
+  <div id="view-strongpc" style="display:none;">
+    <div class="pc-inner">
+
+      <div class="nav-row">
+        <button class="back" type="button" id="btnBackStrongPc">← 返回售卖区</button>
+      </div>
+
+      <header class="pc-head">
+        <h1>强大新整机</h1>
+        <p>中 秋 限 定 · 整 机 配 置 详 情</p>
+      </header>
+
+      <div class="spec-card">
+        <div class="spec-row">
+          <span class="spec-label">机箱</span>
+          <span class="spec-value">白色海景房 · m-atx 规格</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">CPU</span>
+          <span class="spec-value">i3-12100f</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">显卡</span>
+          <span class="spec-value">1660ti</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">内存</span>
+          <span class="spec-value">16g</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">硬盘</span>
+          <span class="spec-value">512g</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">价格</span>
+          <span class="spec-value price-hl">¥3945</span>
+        </div>
+      </div>
+
+      <div class="pc-actions">
+        <button class="pc-buy-btn" type="button" id="btnStrongPcPay">去 支 付</button>
+      </div>
+
+    </div>
+  </div><!-- /view-strongpc -->
+
+
+  <!-- ==================================================
+       购买视图
+       ================================================== -->
+  <div id="view-purchase" style="display:none;">
+    <div class="challenge-wrap">
+
+      <div class="nav-row">
+        <button class="back" type="button" id="btnBackPurchase">← 返回</button>
+      </div>
+
+      <header class="challenge-head">
+        <h1>微 信 支 付</h1>
+        <p id="purchaseItem">购买项目：—</p>
+      </header>
+
+      <div class="wechat-card">
+        <div class="wechat-label">微 信 号</div>
+        <div class="wechat-id">wxid_hqp4pf14s9ne22</div>
+      </div>
+
+      <p class="pay-note">添 加 说 明</p>
+
+      <div class="pay-action">
+        <button class="scan-btn" type="button" id="btnScanned">为什么添加</button>
+      </div>
+
+      <div class="wechat-area" id="wechatArea">
+        <div class="panel-sub-title">添 加 说 明</div>
+        <p class="pay-note2">请在微信添加转账</p>
+      </div>
+
+    </div>
+  </div><!-- /view-purchase -->
+
+
+  <!-- ==================================================
+       计时挑战视图
+       ================================================== -->
+  <div id="view-timer" style="display:none;">
+    <div class="challenge-wrap">
+
+      <div class="nav-row">
+        <button class="back" type="button" id="btnBackTimer">← 返回活动区</button>
+        <button class="back" type="button" id="btnToShowcase">查看配置单 →</button>
+      </div>
+
+      <header class="challenge-head">
+        <h1>A520 仙人</h1>
+        <p>200 秒内 · 基于 A520 主板 · 写出一套 2000 元左右的配置</p>
+      </header>
+
+      <div class="preset">
+        <div class="preset-row">
+          <span class="preset-label">用途</span>
+          <select class="preset-select" id="useType">
+            <option value="">请选择</option>
+            <option value="办公">办公</option>
+            <option value="游戏">游戏</option>
+          </select>
+
+          <span class="preset-label">预算</span>
+          <input class="preset-input" id="budget" type="text" placeholder="如 2000" inputmode="numeric">
+          <span class="preset-unit">元</span>
+        </div>
+        <div class="preset-warn" id="presetWarn"></div>
+      </div>
+
+      <div class="timer" id="timer">
+        <span class="timer-num" id="timerNum">200</span><span class="timer-unit">秒</span>
+        <p class="timer-hint" id="timerHint">点击此处开始计时</p>
+      </div>
+
+      <div class="board" id="board">
+        <div class="board-head">
+          <span class="board-title">装 机 配 置 单</span>
+          <span class="board-note">主板固定 A520 · 机箱与风扇可选不安装 · 散热器可选风冷 / 水冷</span>
+        </div>
+
+        <div class="part">
+          <span class="part-name">CPU</span>
+          <input class="part-input" type="text" data-part="cpu" placeholder="手写填写">
+        </div>
+
+        <div class="part">
+          <span class="part-name">主板</span>
+          <span class="part-fixed">A520</span>
+        </div>
+
+        <div class="part">
+          <span class="part-name">内存</span>
+          <input class="part-input" type="text" data-part="ram" placeholder="手写填写">
+        </div>
+
+        <div class="part">
+          <span class="part-name">显卡</span>
+          <input class="part-input" type="text" data-part="gpu" placeholder="手写填写">
+        </div>
+
+        <div class="part">
+          <span class="part-name">硬盘</span>
+          <input class="part-input" type="text" data-part="disk" placeholder="手写填写">
+        </div>
+
+        <div class="part">
+          <span class="part-name">电源</span>
+          <input class="part-input" type="text" data-part="psu" placeholder="手写填写">
+        </div>
+
+        <div class="part">
+          <span class="part-name">散热器</span>
+          <select class="part-select" data-part="coolerType">
+            <option value="air">风冷</option>
+            <option value="water">水冷</option>
+          </select>
+          <input class="part-input" type="text" data-part="cooler" placeholder="手写填写">
+        </div>
+
+        <div class="part">
+          <span class="part-name">机箱</span>
+          <select class="part-select part-toggle" data-part="caseStatus">
+            <option value="install">安装</option>
+            <option value="none">不安装</option>
+          </select>
+          <input class="part-input" type="text" data-part="case" placeholder="手写填写">
+        </div>
+
+        <div class="part">
+          <span class="part-name">风扇</span>
+          <select class="part-select part-toggle" data-part="fanStatus">
+            <option value="install">安装</option>
+            <option value="none">不安装</option>
+          </select>
+          <input class="part-input" type="text" data-part="fan" placeholder="手写填写">
+        </div>
+      </div>
+
+      <div class="board-actions">
+        <button class="submit-btn" type="button" id="submitBtn" disabled>提 交 配 置 单</button>
+      </div>
+
+      <div class="result" id="result">时 间 到 · 停 止 填 写</div>
+
+    </div>
+  </div><!-- /view-timer -->
+
+
+  <!-- ==================================================
+       配置单展示视图
+       ================================================== -->
+  <div id="view-showcase" style="display:none;">
+    <div class="challenge-wrap">
+
+      <div class="nav-row">
+        <button class="back" type="button" id="btnBackShowcase">← 返回活动区</button>
+      </div>
+
+      <header class="challenge-head">
+        <h1>配置单展示</h1>
+        <p>A520 仙人 · 活动参与配置单 · 所有人可查看与评审</p>
+      </header>
+
+      <div class="showcase-list" id="showcaseList"></div>
+
+    </div>
+  </div><!-- /view-showcase -->
+
+
+  <!-- ==================================================
+       配置单详情视图
+       ================================================== -->
+  <div id="view-detail" style="display:none;">
+    <div class="challenge-wrap">
+
+      <div class="nav-row">
+        <button class="back" type="button" id="btnBackDetail">← 返回展示</button>
+      </div>
+
+      <header class="challenge-head">
+        <h1>配置单详情</h1>
+        <p id="detailSubtitle"></p>
+      </header>
+
+      <div id="detailContent"></div>
+
+    </div>
+  </div><!-- /view-detail -->
+
+
+  <footer class="site-foot">
+    <span>kn it 小卖部 · 线上小店</span>
+    <span class="foot-contact">微信号：wxid_hqp4pf14s9ne22</span>
+    <span>每日 10:00 — 24:00 在线</span>
+  </footer>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  'use strict';
+
+  function $(id){ return document.getElementById(id); }
+
+  /* ==================================================
+     存储
+     ================================================== */
+  var CONFIG_KEY = 'knit_a520_configs';
+  var memoryStore = null;
+
+  function loadConfigs() {
+    if (memoryStore !== null) return memoryStore.slice();
+    try {
+      var raw = localStorage.getItem(CONFIG_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          memoryStore = parsed;
+          return parsed.slice();
+        }
+      }
+    } catch (e) {
+      console.warn('localStorage 读取失败，使用内存存储', e);
+    }
+    memoryStore = [];
+    return [];
+  }
+
+  function saveConfigs(list) {
+    memoryStore = list.slice();
+    try {
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.warn('localStorage 写入失败，仅内存保存', e);
+    }
+  }
+
+  function findConfig(id) {
+    var list = loadConfigs();
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === id) return list[i];
+    }
+    return null;
+  }
+
+  /* ---------- 设备身份 ---------- */
+  function getDeviceId() {
+    try {
+      var id = localStorage.getItem('knit_device_id');
+      if (!id) {
+        id = 'dev_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+        localStorage.setItem('knit_device_id', id);
+      }
+      return id;
+    } catch (e) {
+      return 'sess_' + Math.random().toString(36).slice(2, 10);
+    }
+  }
+  var DEVICE_ID = getDeviceId();
+
+  /* ---------- 工具 ---------- */
+  function esc(str) {
+    if (str == null) return '';
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function starStr(n) {
+    var s = '';
+    for (var i = 1; i <= 5; i++) s += (i <= n ? '★' : '☆');
+    return s;
+  }
+
+  function avgRating(ratings) {
+    if (!ratings || !ratings.length) return null;
+    var sum = 0;
+    for (var i = 0; i < ratings.length; i++) sum += ratings[i].stars;
+    return sum / ratings.length;
+  }
+
+  function myRating(ratings) {
+    if (!ratings) return null;
+    for (var i = 0; i < ratings.length; i++) {
+      if (ratings[i].device === DEVICE_ID) return ratings[i];
+    }
+    return null;
+  }
+
+  /* ---------- 视图切换 ---------- */
+  var VIEW_IDS = ['view-main', 'view-strongpc', 'view-purchase', 'view-timer', 'view-showcase', 'view-detail'];
+
+  function showView(targetId) {
+    for (var i = 0; i < VIEW_IDS.length; i++) {
+      var el = $(VIEW_IDS[i]);
+      if (el) el.style.display = (VIEW_IDS[i] === targetId) ? 'block' : 'none';
+    }
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    catch (e) { window.scrollTo(0, 0); }
+  }
+
+  /* ---------- 标签页 ---------- */
+  var tabs   = document.querySelectorAll('.tab');
+  var panels = document.querySelectorAll('.panel');
+
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].addEventListener('click', function () {
+      var target = this.getAttribute('data-target');
+      for (var j = 0; j < tabs.length; j++) {
+        tabs[j].classList.toggle('is-active', tabs[j] === this);
+      }
+      for (var k = 0; k < panels.length; k++) {
+        panels[k].classList.toggle('is-active', panels[k].id === target);
+      }
+    });
+  }
+
+  /* ==================================================
+     强大新整机 详情页
+     ================================================== */
+  var buyStrongPc = $('buyStrongPc');
+  if (buyStrongPc) {
+    buyStrongPc.addEventListener('click', function () {
+      showView('view-strongpc');
+    });
+  }
+
+  var btnBackStrongPc = $('btnBackStrongPc');
+  if (btnBackStrongPc) {
+    btnBackStrongPc.addEventListener('click', function () {
+      showView('view-main');
+      for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.toggle('is-active', tabs[i].getAttribute('data-target') === 'page-shop');
+      }
+      for (var k = 0; k < panels.length; k++) {
+        panels[k].classList.toggle('is-active', panels[k].id === 'page-shop');
+      }
+    });
+  }
+
+  /* ==================================================
+     购买流程
+     ================================================== */
+  var purchaseItemEl = $('purchaseItem');
+  var wechatArea     = $('wechatArea');
+  var btnScanned     = $('btnScanned');
+  var btnBackPurchase = $('btnBackPurchase');
+
+  function openPurchase(itemName) {
+    if (purchaseItemEl) {
+      purchaseItemEl.textContent = '购买项目：' + itemName;
+    }
+    if (wechatArea) {
+      wechatArea.classList.remove('show');
+    }
+    showView('view-purchase');
+  }
+
+  /* 强大新整机 去支付按钮 */
+  var btnStrongPcPay = $('btnStrongPcPay');
+  if (btnStrongPcPay) {
+    btnStrongPcPay.addEventListener('click', function () {
+      openPurchase('强大新整机');
+    });
+  }
+
+  /* 绑定其他购买按钮（排除强大新整机） */
+  var buyBtns = document.querySelectorAll('.buy-btn');
+  for (var b = 0; b < buyBtns.length; b++) {
+    if (buyBtns[b].id === 'buyStrongPc') continue;
+    buyBtns[b].addEventListener('click', function () {
+      var card = this.closest ? this.closest('.card') : null;
+      var titleEl = card ? card.querySelector('.card-title') : null;
+      var itemName = titleEl ? titleEl.textContent.trim() : '未命名项目';
+      openPurchase(itemName);
+    });
+  }
+
+  /* 为什么添加按钮 → 显示添加说明内容 */
+  if (btnScanned) {
+    btnScanned.addEventListener('click', function () {
+      if (wechatArea) wechatArea.classList.add('show');
+    });
+  }
+
+  /* 返回按钮（购买视图） */
+  if (btnBackPurchase) {
+    btnBackPurchase.addEventListener('click', function () {
+      showView('view-main');
+      for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.toggle('is-active', tabs[i].getAttribute('data-target') === 'page-shop');
+      }
+      for (var k = 0; k < panels.length; k++) {
+        panels[k].classList.toggle('is-active', panels[k].id === 'page-shop');
+      }
+    });
+  }
+
+  /* ==================================================
+     售卖区：黑苹果 / 系统安装 价格切换
+     ================================================== */
+  var hackSelect = $('hackSelect');
+  var hackPrice  = $('hackPrice');
+
+  if (hackSelect && hackPrice) {
+    hackSelect.addEventListener('change', function () {
+      if (this.value === 'with') {
+        hackPrice.textContent = '¥40 起 / 台';
+      } else {
+        hackPrice.textContent = '¥10 / 安装';
+      }
+    });
+  }
+
+  var sysSelect = $('sysSelect');
+  var sysPrice  = $('sysPrice');
+
+  if (sysSelect && sysPrice) {
+    sysSelect.addEventListener('change', function () {
+      if (this.value === 'linux') {
+        sysPrice.textContent = '¥20 起 / 台';
+      } else {
+        sysPrice.textContent = '¥5 起 / 台';
+      }
+    });
+  }
+
+  /* ---------- 计时器 ---------- */
+  var TOTAL = 200;
+
+  var timerEl   = $('timer');
+  var numEl     = $('timerNum');
+  var hintEl    = $('timerHint');
+  var boardEl   = $('board');
+  var resultEl  = $('result');
+  var submitBtn = $('submitBtn');
+  var useTypeEl = $('useType');
+  var budgetEl  = $('budget');
+  var warnEl    = $('presetWarn');
+
+  var remain   = TOTAL;
+  var started  = false;
+  var interval = null;
+
+  var toggles = document.querySelectorAll('.part-toggle');
+  for (var t = 0; t < toggles.length; t++) {
+    toggles[t].addEventListener('change', function () {
+      var input = this.parentNode.querySelector('.part-input');
+      if (!input) return;
+      if (this.value === 'none') {
+        input.value = '';
+        input.disabled = true;
+        input.placeholder = '不安装';
+      } else {
+        input.disabled = false;
+        input.placeholder = '手写填写';
+      }
+    });
+  }
+
+  function resetTimer() {
+    try {
+      if (interval) { clearInterval(interval); interval = null; }
+      started = false;
+      remain  = TOTAL;
+
+      if (numEl)    numEl.textContent = TOTAL;
+      if (hintEl)   hintEl.textContent = '点击此处开始计时';
+      if (timerEl)  timerEl.classList.remove('running');
+      if (boardEl)  boardEl.classList.remove('show');
+      if (resultEl) resultEl.classList.remove('show');
+      if (warnEl)   warnEl.textContent = '';
+
+      if (useTypeEl) { useTypeEl.value = ''; useTypeEl.disabled = false; }
+      if (budgetEl)  { budgetEl.value = '';  budgetEl.disabled = false; }
+      if (submitBtn) submitBtn.disabled = true;
+
+      if (boardEl) {
+        var inputs = boardEl.querySelectorAll('.part-input');
+        for (var a = 0; a < inputs.length; a++) {
+          inputs[a].value = '';
+          inputs[a].disabled = false;
+          inputs[a].placeholder = '手写填写';
+        }
+        var selects = boardEl.querySelectorAll('.part-select');
+        for (var b2 = 0; b2 < selects.length; b2++) {
+          selects[b2].disabled = false;
+          selects[b2].value = selects[b2].classList.contains('part-toggle') ? 'install' : 'air';
+        }
+      }
+    } catch (e) { console.error('resetTimer 出错：', e); }
+  }
+
+  function lockBoard() {
+    if (!boardEl) return;
+    var fields = boardEl.querySelectorAll('input, select');
+    for (var k = 0; k < fields.length; k++) fields[k].disabled = true;
+  }
+
+  if (timerEl) {
+    timerEl.addEventListener('click', function () {
+      if (started) return;
+
+      var useType = useTypeEl ? useTypeEl.value : '';
+      var budget  = budgetEl ? budgetEl.value.trim() : '';
+
+      if (!useType) {
+        if (warnEl) warnEl.textContent = '请先选择用途（办公 / 游戏）';
+        return;
+      }
+      if (!budget) {
+        if (warnEl) warnEl.textContent = '请先填写预算';
+        return;
+      }
+      if (!/^\d+$/.test(budget)) {
+        if (warnEl) warnEl.textContent = '预算请填写数字';
+        return;
+      }
+
+      if (warnEl) warnEl.textContent = '';
+      started = true;
+
+      if (useTypeEl) useTypeEl.disabled = true;
+      if (budgetEl)  budgetEl.disabled  = true;
+
+      timerEl.classList.add('running');
+      if (boardEl) boardEl.classList.add('show');
+      if (hintEl)  hintEl.textContent = '计时中 · 请在写字板上填写配置';
+      if (submitBtn) submitBtn.disabled = false;
+
+      interval = setInterval(function () {
+        remain--;
+        if (numEl) numEl.textContent = remain;
+
+        if (remain <= 0) {
+          clearInterval(interval);
+          interval = null;
+          if (numEl)  numEl.textContent = '0';
+          if (hintEl) hintEl.textContent = '时间到';
+          timerEl.classList.remove('running');
+          lockBoard();
+          if (resultEl) resultEl.classList.add('show');
+        }
+      }, 1000);
+    });
+  }
+
+  /* ---------- 提交配置单 ---------- */
+  if (submitBtn) {
+    submitBtn.addEventListener('click', function () {
+      if (!started || !boardEl) {
+        console.warn('提交失败：计时未开始或写字板不存在');
+        return;
+      }
+
+      var useType = useTypeEl ? useTypeEl.value : '';
+      var budget  = budgetEl ? budgetEl.value.trim() : '';
+
+      var parts = {};
+
+      var inputs = boardEl.querySelectorAll('.part-input');
+      for (var i = 0; i < inputs.length; i++) {
+        var key = inputs[i].getAttribute('data-part');
+        if (key) parts[key] = inputs[i].value.trim();
+      }
+
+      var selects = boardEl.querySelectorAll('.part-select');
+      for (var j = 0; j < selects.length; j++) {
+        var skey = selects[j].getAttribute('data-part');
+        if (skey) parts[skey] = selects[j].options[selects[j].selectedIndex].text;
+      }
+
+      var config = {
+        id: 'cfg_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        owner: DEVICE_ID,
+        useType: useType,
+        budget: budget,
+        parts: parts,
+        ratings: [],
+        isPublic: true,
+        time: Date.now()
+      };
+
+      var list = loadConfigs();
+      list.unshift(config);
+      saveConfigs(list);
+
+      if (interval) { clearInterval(interval); interval = null; }
+
+      resetTimer();
+      renderShowcase(list);
+      showView('view-showcase');
+    });
+  }
+
+  /* ---------- 配置单展示 ---------- */
+  function renderShowcase(overrideList) {
+    var list = overrideList || loadConfigs();
+    var box = $('showcaseList');
+    if (!box) return;
+
+    var visible = [];
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].isPublic || list[i].owner === DEVICE_ID) visible.push(list[i]);
+    }
+
+    if (!visible.length) {
+      box.innerHTML = '<div class="empty">暂 无 配 置 单</div>';
+      return;
+    }
+
+    box.innerHTML = '';
+
+    visible.forEach(function (c) {
+      var avg = avgRating(c.ratings);
+      var avgText = avg === null ? '暂无评分' : (avg.toFixed(1) + ' ★');
+      var isMine = c.owner === DEVICE_ID;
+
+      var el = document.createElement('div');
+      el.className = 'showcase-card';
+
+      el.innerHTML =
+        '<div class="showcase-head">' +
+          '<span class="showcase-use">' + esc(c.useType) + '</span>' +
+          '<span class="showcase-budget">预算 ¥' + esc(c.budget) + '</span>' +
+          (isMine ? '<span class="showcase-mine">我 的</span>' : '') +
+          (!c.isPublic ? '<span class="showcase-private">不 公 开</span>' : '') +
+        '</div>' +
+        '<div class="showcase-rating">平均评分：<b>' + avgText + '</b>（' + c.ratings.length + ' 人评分）</div>';
+
+      var btn = document.createElement('button');
+      btn.className = 'join-btn small';
+      btn.type = 'button';
+      btn.textContent = '查 看 详 情';
+      btn.addEventListener('click', function () { openDetail(c.id); });
+
+      el.appendChild(btn);
+      box.appendChild(el);
+    });
+  }
+
+  /* ---------- 配置单详情 ---------- */
+  function openDetail(id) {
+    var config = findConfig(id);
+    if (!config) return;
+    renderDetail(config);
+    showView('view-detail');
+  }
+
+  function renderDetail(config) {
+    var isMine = config.owner === DEVICE_ID;
+    var avg = avgRating(config.ratings);
+    var avgText = avg === null ? '暂无评分' : (avg.toFixed(1) + ' ★');
+    var mine = myRating(config.ratings);
+
+    var sub = $('detailSubtitle');
+    if (sub) {
+      sub.textContent = '用途 ' + config.useType + ' · 预算 ¥' + config.budget +
+        ' · 平均评分 ' + avgText + ' · ' + config.ratings.length + ' 人评分';
+    }
+
+    var parts = config.parts || {};
+
+    var order = [
+      { label: 'CPU',   value: parts.cpu },
+      { label: '主板',  value: 'A520', fixed: true },
+      { label: '内存',  value: parts.ram },
+      { label: '显卡',  value: parts.gpu },
+      { label: '硬盘',  value: parts.disk },
+      { label: '电源',  value: parts.psu },
+      { label: '散热器', value: (parts.coolerType || '风冷') + (parts.cooler ? ' / ' + parts.cooler : '') },
+      { label: '机箱',  value: parts.caseStatus === '不安装' ? '不安装' : (parts.case || '—'), muted: parts.caseStatus === '不安装' },
+      { label: '风扇',  value: parts.fanStatus === '不安装' ? '不安装' : (parts.fan || '—'), muted: parts.fanStatus === '不安装' }
+    ];
+
+    var partsHtml = '<div class="detail-parts">';
+    order.forEach(function (p) {
+      var cls = 'dp-value';
+      if (p.fixed)  cls += ' fixed';
+      if (p.muted)  cls += ' muted';
+      var v = p.value || '—';
+      partsHtml +=
+        '<div class="detail-part">' +
+          '<span class="dp-label">' + esc(p.label) + '</span>' +
+          '<span class="' + cls + '">' + esc(v) + '</span>' +
+        '</div>';
+    });
+    partsHtml += '</div>';
+
+    var actionsHtml =
+      '<div class="detail-actions">' +
+        '<button class="join-btn" type="button" id="btnPublicReview"' +
+          (isMine ? ' style="display:none;"' : '') + '>大 众 评 审</button>' +
+        '<button class="join-btn" type="button" id="btnViewRatings"' +
+          (isMine ? '' : ' style="display:none;"') + '>评审结果查看</button>' +
+        '<button class="join-btn" type="button" id="btnViewOptions"' +
+          (isMine ? '' : ' style="display:none;"') + '>查 看 选 项</button>' +
+      '</div>';
+
+    var reviewHtml =
+      '<div class="review-area" id="reviewArea">' +
+        '<div class="panel-sub-title">给 这 份 配 置 单 打 分</div>' +
+        '<div class="star-row" id="starRow">' +
+          '<button class="star" type="button" data-star="1">★</button>' +
+          '<button class="star" type="button" data-star="2">★</button>' +
+          '<button class="star" type="button" data-star="3">★</button>' +
+          '<button class="star" type="button" data-star="4">★</button>' +
+          '<button class="star" type="button" data-star="5">★</button>' +
+        '</div>' +
+        '<div class="review-note" id="reviewNote">点击星星即可提交评分 · 每人仅记一次，可重复修改</div>' +
+      '</div>';
+
+    var ratingsHtml =
+      '<div class="ratings-wrap" id="ratingsWrap">' +
+        '<div class="panel-sub-title">评 审 结 果</div>' +
+        '<div id="ratingsList"></div>' +
+      '</div>';
+
+    var optionsHtml =
+      '<div class="options-wrap" id="optionsWrap">' +
+        '<div class="panel-sub-title">查 看 选 项</div>' +
+        '<div class="options-row">' +
+          '<label><input type="radio" name="vis" value="public"' + (config.isPublic ? ' checked' : '') + '> 公 开</label>' +
+          '<label><input type="radio" name="vis" value="private"' + (!config.isPublic ? ' checked' : '') + '> 不 公 开</label>' +
+        '</div>' +
+        '<div class="review-note">不公开后，其他人在展示页将看不到这份配置单，你本人仍可查看与评审结果。</div>' +
+      '</div>';
+
+    var content = $('detailContent');
+    if (!content) return;
+    content.innerHTML = partsHtml + actionsHtml + reviewHtml + ratingsHtml + optionsHtml;
+
+    var btnPublicReview = $('btnPublicReview');
+    var reviewArea = $('reviewArea');
+    var starRow    = $('starRow');
+    var reviewNote = $('reviewNote');
+
+    if (btnPublicReview && !isMine) {
+      if (mine && reviewNote) {
+        reviewNote.textContent = '你已评 ' + mine.stars + ' 星，可点击星星修改。';
+      }
+      btnPublicReview.addEventListener('click', function () {
+        reviewArea.classList.toggle('show');
+      });
+
+      var stars = starRow.querySelectorAll('.star');
+      for (var s = 0; s < stars.length; s++) {
+        stars[s].addEventListener('click', function () {
+          var val = parseInt(this.getAttribute('data-star'), 10);
+          submitRating(config.id, val);
+        });
+      }
+    }
+
+    var btnViewRatings = $('btnViewRatings');
+    var ratingsWrap    = $('ratingsWrap');
+    var ratingsList    = $('ratingsList');
+
+    if (btnViewRatings && isMine) {
+      btnViewRatings.addEventListener('click', function () {
+        var cur = findConfig(config.id);
+        if (!cur) return;
+        var arr = cur.ratings || [];
+        if (!arr.length) {
+          ratingsList.innerHTML = '<div class="empty">暂 无 评 分</div>';
+        } else {
+          var h = '';
+          arr.forEach(function (r, idx) {
+            h +=
+              '<div class="rating-item">' +
+                '<span class="rating-num">' + (idx + 1) + '.</span>' +
+                '<span class="rating-stars">' + starStr(r.stars) + '</span>' +
+                '<span class="rating-who">匿名用户 #' + (idx + 1) + '</span>' +
+              '</div>';
+          });
+          ratingsList.innerHTML = h;
+        }
+        ratingsWrap.classList.toggle('show');
+      });
+    }
+
+    var btnViewOptions = $('btnViewOptions');
+    var optionsWrap    = $('optionsWrap');
+
+    if (btnViewOptions && isMine) {
+      btnViewOptions.addEventListener('click', function () {
+        optionsWrap.classList.toggle('show');
+      });
+
+      var radios = optionsWrap.querySelectorAll('input[name="vis"]');
+      for (var r = 0; r < radios.length; r++) {
+        radios[r].addEventListener('change', function () {
+          var list = loadConfigs();
+          for (var q = 0; q < list.length; q++) {
+            if (list[q].id === config.id) {
+              list[q].isPublic = (this.value === 'public');
+              break;
+            }
+          }
+          saveConfigs(list);
+        });
+      }
+    }
+  }
+
+  function submitRating(configId, stars) {
+    var list = loadConfigs();
+    var target = null;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === configId) { target = list[i]; break; }
+    }
+    if (!target) return;
+    if (target.owner === DEVICE_ID) return;
+
+    if (!target.ratings) target.ratings = [];
+
+    var found = false;
+    for (var j = 0; j < target.ratings.length; j++) {
+      if (target.ratings[j].device === DEVICE_ID) {
+        target.ratings[j].stars = stars;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      target.ratings.push({ device: DEVICE_ID, stars: stars, time: Date.now() });
+    }
+
+    saveConfigs(list);
+    renderDetail(target);
+  }
+
+  /* ==================================================
+     按钮绑定
+     ================================================== */
+
+  var btnEntryShowcase = $('btnEntryShowcase');
+  if (btnEntryShowcase) {
+    btnEntryShowcase.addEventListener('click', function () {
+      try { resetTimer(); } catch (e) { console.error(e); }
+      renderShowcase();
+      showView('view-showcase');
+    });
+  }
+
+  var btnA520 = $('btnA520');
+  if (btnA520) {
+    btnA520.addEventListener('click', function () {
+      try { resetTimer(); } catch (e) { console.error(e); }
+      showView('view-timer');
+    });
+  }
+
+  var btnBackTimer = $('btnBackTimer');
+  if (btnBackTimer) {
+    btnBackTimer.addEventListener('click', function () {
+      try { resetTimer(); } catch (e) { console.error(e); }
+      showView('view-main');
+    });
+  }
+
+  var btnToShowcase = $('btnToShowcase');
+  if (btnToShowcase) {
+    btnToShowcase.addEventListener('click', function () {
+      try { resetTimer(); } catch (e) { console.error(e); }
+      renderShowcase();
+      showView('view-showcase');
+    });
+  }
+
+  var btnBackShowcase = $('btnBackShowcase');
+  if (btnBackShowcase) {
+    btnBackShowcase.addEventListener('click', function () {
+      showView('view-main');
+    });
+  }
+
+  var btnBackDetail = $('btnBackDetail');
+  if (btnBackDetail) {
+    btnBackDetail.addEventListener('click', function () {
+      renderShowcase();
+      showView('view-showcase');
+    });
+  }
+
+  try {
+    var initList = loadConfigs();
+    console.log('初始化配置单数量：', initList.length);
+  } catch (e) {
+    console.warn('初始化加载配置单失败', e);
+  }
+
+  console.log('kn it 小卖部脚本已加载，设备 id：', DEVICE_ID);
+
+});
+</script>
+
+</body>
+</html>
